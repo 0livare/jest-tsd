@@ -28,14 +28,14 @@ yarn add --dev jest-tsd @tsd/typescript
 1. Add a test to your Jest test file
 
    ```js
-   import { expectTypeTestsToPass } from 'jest-tsd';
+   import { expectTypeTestsToPassAsync } from 'jest-tsd';
 
-   it('should not produce static type errors', () => {
-     expectTypeTestsToPass(__filename);
+   it('should not produce static type errors', async () => {
+     await expectTypeTestsToPassAsync(__filename);
    });
    ```
 
-   > If for some reason your type definition file(s) are not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPass()` instead of `__filename`.
+   > If for some reason your type definition file(s) are not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPassAsync()` instead of `__filename`.
 
 ## Assertions
 

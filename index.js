@@ -1,7 +1,7 @@
 const tsdImport = require('tsd-lite');
 const tsd = tsdImport.default;
 
-async function expectTypeTestsToPass(...pathToTypeDefTest) {
+async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
   const testFiles = pathToTypeDefTest.map((p) => {
     let testPath = p.replace(/.test.[jt]sx?$/, `.test-d.ts`);
     if (p.endsWith('x')) testPath += 'x';
@@ -26,7 +26,7 @@ async function expectTypeTestsToPass(...pathToTypeDefTest) {
 }
 
 module.exports = {
-  expectTypeTestsToPass,
+  expectTypeTestsToPassAsync,
 
   expectType: tsdImport.expectType,
   expectError: tsdImport.expectError,

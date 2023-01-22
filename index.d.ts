@@ -30,7 +30,9 @@ type ShortTsdResult = {
  * filename excluding the extensions, you can just pass __filename to this
  * function.
  */
-export async function expectTypeTestsToPass(...pathToTypeDefTest: string[]): {
+export async function expectTypeTestsToPassAsync(
+  ...pathToTypeDefTest: string[]
+): {
   assertionsCount: number;
   tsdResults: ShortTsdResult;
 };
