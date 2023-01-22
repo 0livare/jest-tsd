@@ -34,3 +34,29 @@ describe('.test.*', () => {
     expect(convert('xtestjsx.test.tsx')[0]).toBe('xtestjsx.test-d.tsx');
   });
 });
+
+describe('.spec.*', () => {
+  it('should convert .spec.js paths', () => {
+    expect(convert('foo.spec.js')[0]).toBe('foo.test-d.ts');
+    expect(convert('foo.bar.spec.js')[0]).toBe('foo.bar.test-d.ts');
+    expect(convert('xspecjsx.spec.js')[0]).toBe('xspecjsx.test-d.ts');
+  });
+
+  it('should convert .spec.ts paths', () => {
+    expect(convert('foo.spec.ts')[0]).toBe('foo.test-d.ts');
+    expect(convert('foo.bar.spec.ts')[0]).toBe('foo.bar.test-d.ts');
+    expect(convert('xspecjsx.spec.ts')[0]).toBe('xspecjsx.test-d.ts');
+  });
+
+  it('should convert .spec.jsx paths', () => {
+    expect(convert('foo.spec.jsx')[0]).toBe('foo.test-d.tsx');
+    expect(convert('foo.bar.spec.jsx')[0]).toBe('foo.bar.test-d.tsx');
+    expect(convert('xspecjsx.spec.jsx')[0]).toBe('xspecjsx.test-d.tsx');
+  });
+
+  it('should convert .spec.tsx paths', () => {
+    expect(convert('foo.spec.tsx')[0]).toBe('foo.test-d.tsx');
+    expect(convert('foo.bar.spec.tsx')[0]).toBe('foo.bar.test-d.tsx');
+    expect(convert('xspectsx.spec.tsx')[0]).toBe('xspectsx.test-d.tsx');
+  });
+});
