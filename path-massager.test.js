@@ -7,6 +7,11 @@ it('should convert all passed paths', () => {
   expect(result[1]).toBe('bar.test-d.ts');
 });
 
+it("DOESN'T convert paths that are already .test-d.ts", () => {
+  expect(convert('foo.test-d.ts')[0]).toBe('foo.test-d.ts');
+  expect(convert('foo.test-d.tsx')[0]).toBe('foo.test-d.tsx');
+});
+
 describe('.test.*', () => {
   it('should convert .test.js paths', () => {
     expect(convert('foo.test.js')[0]).toBe('foo.test-d.ts');
