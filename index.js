@@ -1,13 +1,10 @@
 const tsdImport = require('tsd-lite');
 const tsd = tsdImport.default;
 
-async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
-  const testFiles = pathToTypeDefTest.map((p) => {
-    let testPath = p.replace(/.test.[jt]sx?$/, `.test-d.ts`);
-    if (p.endsWith('x')) testPath += 'x';
-    return testPath;
-  });
+const { convertPathsToTypeDefTest } = require('./path-massager');
 
+async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
+  const testFiles = convertPathsToTypeDefTest(...pathToTypeDefTest);
   const { assertionsCount, tsdResults } = tsd(...testFiles);
 
   const results = tsdResults.map((r) => ({
