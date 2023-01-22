@@ -5,7 +5,11 @@ The easiest way to test your TS types with Jest.
 ## Install
 
 ```bash
-npm i jest-tsd @tsd/typescript
+# Install with npm
+npm i -D jest-tsd @tsd/typescript
+
+# Or install with yarn
+yarn add --dev jest-tsd @tsd/typescript
 ```
 
 > Note: `@tsd/typescript` will be used to compile your type tests. If you have compiling issues, adjust its version to match the version of `typescript` you have installed.
