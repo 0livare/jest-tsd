@@ -1,18 +1,6 @@
 const tsdImport = require('tsd-lite');
 const tsd = tsdImport.default;
 
-/**
- * A helper function to assist with running static TS type definition tests
- * that utilize tsd.
- *
- * @param pathToTypeDefTest Paths to `.test-d.ts` files. If the passed paths
- * do not end in `.test-d.tsx?`, a best attempt will be made to change the
- * file extension to be correct.
- *
- * Pro tip: If your Jest test file and your type def test have the same
- * filename excluding the extensions, you can just pass __filename to this
- * function.
- */
 async function expectTypeTestsToPass(...pathToTypeDefTest) {
   const testFiles = pathToTypeDefTest.map((p) => {
     let testPath = p.replace(/.test.[jt]sx?$/, `.test-d.ts`);
