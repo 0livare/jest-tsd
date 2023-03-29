@@ -32,10 +32,10 @@ type ShortTsdResult = {
  */
 export async function expectTypeTestsToPassAsync(
   ...pathToTypeDefTest: string[]
-): {
+): Promise<{
   assertionsCount: number;
   tsdResults: ShortTsdResult;
-};
+}>;
 
 export {
   expectType,
