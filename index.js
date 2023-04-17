@@ -16,8 +16,12 @@ async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
     },
   }));
 
-  if (tsdResults.length) console.error(shortResults);
-  expect(tsdResults).toHaveLength(0);
+  // Don't pass to jest or log the full results because they make
+  // the jest output unreadable. But the full results are still
+  // available via the return value though if the user need them
+  // for diagnostic purposes.
+  if (shortResults.length) console.error(shortResults);
+  expect(shortResults).toHaveLength(0);
 
   return {
     assertionsCount,
