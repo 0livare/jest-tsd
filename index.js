@@ -1,3 +1,4 @@
+const fs = require('fs').promises;
 const tsdImport = require('tsd-lite');
 const tsd = tsdImport.default;
 
@@ -5,6 +6,15 @@ const { convertPathsToTypeDefTest } = require('./path-massager');
 
 async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
   const testFiles = convertPathsToTypeDefTest(...pathToTypeDefTest);
+
+  try {
+    await Promise.all(
+      testFiles.map((filePath) => fs.access(filePath, fs.constants.F_OK))
+    );
+  } catch (e) {
+    throw new Error(`The type definition test at "${e.path}" does not exist"`);
+  }
+
   const { assertionsCount, tsdResults } = tsd(...testFiles);
 
   const shortResults = tsdResults.map((r) => ({

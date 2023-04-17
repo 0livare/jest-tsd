@@ -1,6 +1,6 @@
 {
   "name": "jest-tsd",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "The easiest way to test your TS types with Jest",
   "main": "index.js",
   "author": "Zach Olivare <zach@olivare.net>",
