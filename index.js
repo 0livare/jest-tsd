@@ -7,7 +7,7 @@ async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
   const testFiles = convertPathsToTypeDefTest(...pathToTypeDefTest);
   const { assertionsCount, tsdResults } = tsd(...testFiles);
 
-  const results = tsdResults.map((r) => ({
+  const shortResults = tsdResults.map((r) => ({
     messageText: r.messageText,
     file: {
       pos: r.file.pos,
@@ -16,10 +16,16 @@ async function expectTypeTestsToPassAsync(...pathToTypeDefTest) {
     },
   }));
 
-  if (tsdResults.length) console.error(results);
-  expect(results).toHaveLength(0);
+  if (tsdResults.length) console.error(shortResults);
+  expect(tsdResults).toHaveLength(0);
 
-  return { assertionsCount, tsdResults };
+  return {
+    assertionsCount,
+    tsdResults,
+    shortResults,
+    receivedPaths: pathToTypeDefTest,
+    testFiles,
+  };
 }
 
 module.exports = {

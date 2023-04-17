@@ -1,0 +1,68 @@
+Arguments: 
+  /Users/zposten/.nvm/versions/node/v18.14.2/bin/node /usr/local/Cellar/yarn/1.22.18/libexec/bin/yarn.js publish
+
+PATH: 
+  /Users/zposten/.nvm/versions/node/v18.14.2/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Library/Apple/usr/bin::/Users/zposten/go:
+
+Yarn version: 
+  1.22.18
+
+Node version: 
+  18.14.2
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/local/Cellar/yarn/1.22.18/libexec/lib/cli.js:137143:13)
+      at Interface.emit (node:events:513:28)
+      at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1130:18)
+      at ReadStream.onkeypress (node:internal/readline/interface:270:20)
+      at ReadStream.emit (node:events:513:28)
+      at emitKeys (node:internal/readline/utils:357:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+      at ReadStream.emit (node:events:513:28)
+      at addChunk (node:internal/streams/readable:324:12)
+
+npm manifest: 
+  {
+    "name": "jest-tsd",
+    "version": "0.1.1",
+    "description": "The easiest way to test your TS types with Jest",
+    "main": "index.js",
+    "author": "Zach Olivare <zach@olivare.net>",
+    "license": "MIT",
+    "repository": "https://github.com/0livare/jest-tsd",
+    "scripts": {
+      "test": "jest"
+    },
+    "peerDependencies": {
+      "@tsd/typescript": "4.x || 5.x"
+    },
+    "dependencies": {
+      "tsd-lite": "^0.7.0"
+    },
+    "devDependencies": {
+      "@types/jest": "^29.5.0",
+      "jest": "^29.5.0"
+    },
+    "keywords": [
+      "jest",
+      "typescript",
+      "testing",
+      "tsd",
+      "tsd-lite",
+      "static",
+      "type definition",
+      "assert",
+      "expect"
+    ]
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

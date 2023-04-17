@@ -34,7 +34,10 @@ export async function expectTypeTestsToPassAsync(
   ...pathToTypeDefTest: string[]
 ): Promise<{
   assertionsCount: number;
-  tsdResults: ShortTsdResult;
+  tsdResults: TsdResult[];
+  shortResults: ShortTsdResult[];
+  receivedPaths: string[];
+  testFiles: string[];
 }>;
 
 export {
