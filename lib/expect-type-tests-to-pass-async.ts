@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import tsd, {type TsdResult} from 'tsd-lite'
 
 import {convertPathToTypeDefTest} from './path-massager'
+import {formatTsdResults} from './formatter'
 
 type ShortTsdResult = {
   messageText: TsdResult['messageText']
@@ -49,7 +50,7 @@ export async function expectTypeTestsToPassAsync(pathToTypeDefTest: string) {
   // the jest output unreadable. But the full results are still
   // available via the return value though if the user need them
   // for diagnostic purposes.
-  if (shortResults.length) console.error(shortResults)
+  if (shortResults.length) console.error(formatTsdResults(tsdResults))
   expect(shortResults).toHaveLength(0)
 
   return {

@@ -30,7 +30,7 @@ function getCodeFrameAndLocation(file: SourceFile, start: number | undefined) {
   const codeFrame = codeFrameColumns(
     file.text,
     {start: {line: line + 1, column: character + 1}},
-    {highlightCode: true, linesAbove: 0, linesBelow: 0},
+    {highlightCode: true, linesAbove: 2, linesBelow: 2},
   )
 
   const location =
@@ -42,7 +42,7 @@ function getCodeFrameAndLocation(file: SourceFile, start: number | undefined) {
 }
 
 export function formatTsdResults(tsdResults: TsdResult[]) {
-  const title = chalk.bold.red(makeTitle('tsd typecheck'))
+  // const title = chalk.bold.red(makeTitle('tsd typecheck'))
 
   const messages = tsdResults.map((result) => {
     const message = ts.flattenDiagnosticMessageText(result.messageText, '\n')
@@ -56,5 +56,6 @@ export function formatTsdResults(tsdResults: TsdResult[]) {
       : [indentEachLine(message, 2), indentEachLine(codeFrameAndLocation, 2)].join('\n\n')
   })
 
-  return [title, messages.join('\n\n'), ''].join('\n')
+  // return [title, messages.join('\n\n'), ''].join('\n')
+  return [messages.join('\n\n'), ''].join('\n')
 }
