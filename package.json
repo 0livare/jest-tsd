@@ -2,11 +2,14 @@
   "name": "jest-tsd",
   "version": "0.1.4",
   "description": "The easiest way to test your TS types with Jest",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "author": "Zach Olivare <zach@olivare.net>",
   "license": "MIT",
   "repository": "https://github.com/0livare/jest-tsd",
   "scripts": {
+    "build": "tsup lib/index.ts --format cjs,esm --dts",
     "test": "jest"
   },
   "peerDependencies": {
@@ -16,8 +19,15 @@
     "tsd-lite": "^0.7.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "@babel/preset-typescript": "^7.21.4",
     "@types/jest": "^29.5.0",
-    "jest": "^29.5.0"
+    "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.7",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   },
   "keywords": [
     "jest",

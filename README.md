@@ -22,24 +22,24 @@ yarn add --dev jest-tsd @tsd/typescript
    - In your type definition test you can import the assertion functions from `jest-tsd`
 
      ```js
-     import { expectType } from 'jest-tsd';
+     import {expectType} from 'jest-tsd'
      ```
 
 1. Add a test to your Jest test file
 
    ```js
-   import { expectTypeTestsToPassAsync } from 'jest-tsd';
+   import {expectTypeTestsToPassAsync} from 'jest-tsd'
 
    it('should not produce static type errors', async () => {
-     await expectTypeTestsToPassAsync(__filename);
-   });
+     await expectTypeTestsToPassAsync(__filename)
+   })
    ```
 
-   > If for some reason your type definition test file(s) are not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPassAsync()` instead of `__filename`.
+   > If for some reason your type definition test file is not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPassAsync()` instead of `__filename`.
 
 ## Assertions
 
-These assertions are re-exported from [tsd](https://github.com/SamVerschueren/tsd/blob/main/readme.md#assertions).
+These assertions are re-exported from tsd-lite:
 
 ### expectType&lt;T&gt;(expression: T)
 
