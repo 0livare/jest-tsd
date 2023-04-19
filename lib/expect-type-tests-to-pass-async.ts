@@ -1,17 +1,4 @@
-import fs from 'fs/promises'
-import tsd, {type TsdResult} from 'tsd-lite'
-
-import {convertPathToTypeDefTest} from './path-massager'
-import {formatTsdResults} from './formatter'
-
-type ShortTsdResult = {
-  messageText: TsdResult['messageText']
-  file: {
-    pos: number | undefined
-    end: number | undefined
-    fileName: string | undefined
-  }
-}
+import {getTsdResults} from './get-tsd-results'
 
 /**
  * A helper function to assist with running static TS type definition tests
@@ -26,38 +13,29 @@ type ShortTsdResult = {
  * function.
  */
 export async function expectTypeTestsToPassAsync(pathToTypeDefTest: string) {
-  const testFile = convertPathToTypeDefTest(pathToTypeDefTest)
+  const {
+    allTestsPassed,
+    assertionsCount,
+    testFilePath,
 
-  try {
-    await fs.access(testFile, fs.constants.F_OK)
-  } catch (e: unknown) {
-    const err = e as NodeJS.ErrnoException
-    throw new Error(`The type definition test at "${err.path}" does not exist"`)
-  }
-
-  const {assertionsCount, tsdResults} = tsd(testFile)
-
-  const shortResults: ShortTsdResult[] = tsdResults.map((r) => ({
-    messageText: r.messageText,
-    file: {
-      pos: r.file?.pos,
-      end: r.file?.end,
-      fileName: r.file?.fileName,
-    },
-  }))
+    tsdResults,
+    shortResults,
+    errorCodeFrame,
+  } = await getTsdResults(pathToTypeDefTest)
 
   // Don't pass to jest or log the full results because they make
   // the jest output unreadable. But the full results are still
   // available via the return value though if the user need them
   // for diagnostic purposes.
-  if (shortResults.length) console.error(formatTsdResults(tsdResults))
+  if (!allTestsPassed) console.error(errorCodeFrame)
   expect(shortResults).toHaveLength(0)
 
   return {
+    receivedPath: pathToTypeDefTest,
+    testFilePath,
+
     assertionsCount,
     tsdResults,
     shortResults,
-    receivedPath: pathToTypeDefTest,
-    testFile,
   }
 }
