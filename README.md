@@ -23,6 +23,20 @@ yarn add --dev jest-tsd @tsd/typescript
 
 Type tests are written in a separate `.test-d.ts` file from the rest of your tests, and then run from within your test file by calling `expectTypeTestsToPassAsync()`.
 
+1. Call `expectTypeTestsToPassAsync()` in your Jest test file
+
+   ```js
+   // src/dir/foo.test.[jt]s
+
+   import {expectTypeTestsToPassAsync} from 'jest-tsd'
+
+   it('should not produce static type errors', async () => {
+     await expectTypeTestsToPassAsync(__filename)
+   })
+   ```
+
+   > If for some reason your `.test-d.ts` type definition test file is not co-located to your Jest test file, you can pass the definition test file's absolute path to `expectTypeTestsToPassAsync()` (instead of `__filename`).
+
 1. Create a type definition test file `.test-d.ts` in the same directory with the same name as your Jest test file
 
    - e.g. If your Jest test is located at `src/dir/foo.test.js`, create a `src/dir/foo.test-d.ts` file
@@ -61,20 +75,6 @@ Type tests are written in a separate `.test-d.ts` file from the rest of your tes
        expectAssignable<Partial<{a: string; b: string}>>({})
      })
      ```
-
-1. Call `expectTypeTestsToPassAsync()` in your Jest test file
-
-   ```js
-   // src/dir/foo.test.[jt]s
-
-   import {expectTypeTestsToPassAsync} from 'jest-tsd'
-
-   it('should not produce static type errors', async () => {
-     await expectTypeTestsToPassAsync(__filename)
-   })
-   ```
-
-   > If for some reason your `.test-d.ts` type definition test file is not co-located to your Jest test file, you can pass the definition test file's absolute path to `expectTypeTestsToPassAsync()` (instead of `__filename`).
 
 ## Assertions
 

@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import tsd, {type TsdResult} from 'tsd-lite'
+import chalk from 'chalk'
 
 import {convertPathToTypeDefTest} from './path-massager'
 import {formatTsdResults} from './formatter'
@@ -20,7 +21,16 @@ export async function getTsdResults(pathToTypeDefTest: string) {
     await fs.access(testFilePath, fs.constants.F_OK)
   } catch (e: unknown) {
     const err = e as NodeJS.ErrnoException
-    throw new Error(`The type definition test at "${err.path}" does not exist"`)
+    const jestTestFileName = pathToTypeDefTest.split('/').pop()
+    throw new Error(
+      [
+        `No type definition test file found.`,
+        `File does not exist: ${err.path}`,
+        chalk.bold.yellow(
+          `Did you forget to create your \`.test-d.ts\` file for ${jestTestFileName}?`,
+        ),
+      ].join('\n'),
+    )
   }
 
   const {assertionsCount, tsdResults} = tsd(testFilePath)
