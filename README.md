@@ -1,6 +1,11 @@
 # Jest TSD
 
-The easiest way to test your TS types with Jest.
+The easiest way to test your TypeScript types with Jest.
+
+- Zero-config
+- Works with your current Jest setup
+- Write your regular tests in either JavaScript or TypeScript
+- Jest outputs descriptive, helpful error messages when tests fail
 
 ## Install
 
@@ -16,30 +21,64 @@ yarn add --dev jest-tsd @tsd/typescript
 
 ## Setup
 
+Type tests are written in a separate `.test-d.ts` file from the rest of your tests, and then run from within your test file by calling `expectTypeTestsToPassAsync()`.
+
+1. Call `expectTypeTestsToPassAsync()` in your Jest test file
+
+   ```js
+   // src/dir/foo.test.[jt]s
+
+   import {expectTypeTestsToPassAsync} from 'jest-tsd'
+
+   it('should not produce static type errors', async () => {
+     await expectTypeTestsToPassAsync(__filename)
+   })
+   ```
+
+   > If for some reason your `.test-d.ts` type definition test file is not co-located to your Jest test file, you can pass the definition test file's absolute path to `expectTypeTestsToPassAsync()` (instead of `__filename`).
+
 1. Create a type definition test file `.test-d.ts` in the same directory with the same name as your Jest test file
 
    - e.g. If your Jest test is located at `src/dir/foo.test.js`, create a `src/dir/foo.test-d.ts` file
-   - In your type definition test you can import the assertion functions from `jest-tsd`
+   - In your type definition test you can import the [assertion functions](#assertions) from `jest-tsd`
 
-     ```js
-     import { expectType } from 'jest-tsd';
+     ```ts
+     // src/dir/foo.test-d.ts
+
+     import {
+       expectType,
+       expectError,
+       expectNotType,
+       expectAssignable,
+       expectNotAssignable,
+       expectDeprecated,
+       expectNotDeprecated,
+     } from 'jest-tsd'
+
+     test('Array.from() can be called with a variety of types', () => {
+       Array.from('foo')
+       Array.from(new Set())
+       Array.from([1, 2, 3])
+       Array.from({length: 3}, (_, i) => i)
+     })
+
+     test('Adding two numbers should produce a number', () => {
+       expectType<number>(1 + 1)
+       expectType<number>(2 + 2)
+     })
+
+     test('A plain object should not have a filter function', () => {
+       expectError({}.filter((x: any) => x))
+     })
+
+     test('Partial<T> should make all keys optional', () => {
+       expectAssignable<Partial<{a: string; b: string}>>({})
+     })
      ```
-
-1. Add a test to your Jest test file
-
-   ```js
-   import { expectTypeTestsToPassAsync } from 'jest-tsd';
-
-   it('should not produce static type errors', async () => {
-     await expectTypeTestsToPassAsync(__filename);
-   });
-   ```
-
-   > If for some reason your type definition test file(s) are not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPassAsync()` instead of `__filename`.
 
 ## Assertions
 
-These assertions are re-exported from [tsd](https://github.com/SamVerschueren/tsd/blob/main/readme.md#assertions).
+These assertions are re-exported from tsd-lite:
 
 ### expectType&lt;T&gt;(expression: T)
 
