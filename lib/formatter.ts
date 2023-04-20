@@ -1,9 +1,10 @@
 import {posix, relative, sep} from 'path'
 import {codeFrameColumns} from '@babel/code-frame'
 import chalk from 'chalk'
-
 import ts, {type SourceFile} from '@tsd/typescript'
 import {type TsdResult} from 'tsd-lite'
+
+import {regexLastIndexOf} from './utils'
 
 const NOT_EMPTY_LINE_REGEXP = /^(?!$)/gm
 const INDENT = '  '
@@ -54,14 +55,16 @@ function getCodeFrameAndLocation(file: SourceFile, start: number) {
   return [codeFrame, indentEachLine(location, 1)].join('\n\n')
 }
 
+const TEST_DESCRIPTOR_REGEXP = /(it|test)\s*\(\s*['"](.+)['"]/i
+
 function getTestDescription(file: SourceFile, start: number) {
   // Delete everything after the error
   let text = file.text.substring(0, start)
   // Find the last test descriptor remaining in the file
-  let index = Math.max(text.lastIndexOf('it:'), text.lastIndexOf('test:'))
+  let index = regexLastIndexOf(text, TEST_DESCRIPTOR_REGEXP)
   // Delete everything before the test descriptor
   text = text.substring(index)
 
-  let testDescription = text.match(/(it|test):\s+(.+)/i)
+  let testDescription = text.match(TEST_DESCRIPTOR_REGEXP)
   return testDescription ? testDescription[2] : null
 }

@@ -29,6 +29,8 @@ Type tests are written in a separate `.test-d.ts` file from the rest of your tes
    - In your type definition test you can import the [assertion functions](#assertions) from `jest-tsd`
 
      ```ts
+     // src/dir/foo.test-d.ts
+
      import {
        expectType,
        expectError,
@@ -39,30 +41,32 @@ Type tests are written in a separate `.test-d.ts` file from the rest of your tes
        expectNotDeprecated,
      } from 'jest-tsd'
 
-     // test: Array.from() can be called with a variety of types
-     Array.from('foo')
-     Array.from(new Set())
-     Array.from([1, 2, 3])
-     Array.from({length: 3}, (_, i) => i)
+     test('Array.from() can be called with a variety of types', () => {
+       Array.from('foo')
+       Array.from(new Set())
+       Array.from([1, 2, 3])
+       Array.from({length: 3}, (_, i) => i)
+     })
 
-     // test: Adding two numbers should produce a number
-     expectType<number>(1 + 1)
-     expectType<number>(2 + 2)
+     test('Adding two numbers should produce a number', () => {
+       expectType<number>(1 + 1)
+       expectType<number>(2 + 2)
+     })
 
-     // test: A plain object should not have a filter function
-     expectError({}.filter((x: any) => x))
+     test('A plain object should not have a filter function', () => {
+       expectError({}.filter((x: any) => x))
+     })
 
-     // test: Partial should make all keys optional
-     expectAssignable<Partial<{a: string; b: string}>>({})
+     test('Partial<T> should make all keys optional', () => {
+       expectAssignable<Partial<{a: string; b: string}>>({})
+     })
      ```
-
-     > 💡 Pro tip: Even though you can't use the `test()` and `it()` functions in `.test-d.ts` file (that file gets compiled, not actually executed), you can still label your test cases so that any test error messages are easy to read and point you to the right spot.
-     >
-     > Just add a single line comment that begins with `// test:` or `// it:` above one or more test cases and that text will be included with the error message if any of those assertions fail.
 
 1. Call `expectTypeTestsToPassAsync()` in your Jest test file
 
    ```js
+   // src/dir/foo.test.[jt]s
+
    import {expectTypeTestsToPassAsync} from 'jest-tsd'
 
    it('should not produce static type errors', async () => {
