@@ -1,6 +1,11 @@
 # Jest TSD
 
-The easiest way to test your TS types with Jest.
+The easiest way to test your TypeScript types with Jest.
+
+- Zero-config
+- Works with your current Jest setup
+- Write your regular tests in either JavaScript or TypeScript
+- Jest outputs descriptive, helpful error messages when tests fail
 
 ## Install
 
@@ -16,16 +21,46 @@ yarn add --dev jest-tsd @tsd/typescript
 
 ## Setup
 
+Type tests are written in a separate `.test-d.ts` file from the rest of your tests, and then run from within your test file by calling `expectTypeTestsToPassAsync()`.
+
 1. Create a type definition test file `.test-d.ts` in the same directory with the same name as your Jest test file
 
    - e.g. If your Jest test is located at `src/dir/foo.test.js`, create a `src/dir/foo.test-d.ts` file
-   - In your type definition test you can import the assertion functions from `jest-tsd`
+   - In your type definition test you can import the [assertion functions](#assertions) from `jest-tsd`
 
-     ```js
-     import {expectType} from 'jest-tsd'
+     ```ts
+     import {
+       expectType,
+       expectError,
+       expectNotType,
+       expectAssignable,
+       expectNotAssignable,
+       expectDeprecated,
+       expectNotDeprecated,
+     } from 'jest-tsd'
+
+     // test: Array.from() can be called with a variety of types
+     Array.from('foo')
+     Array.from(new Set())
+     Array.from([1, 2, 3])
+     Array.from({length: 3}, (_, i) => i)
+
+     // test: Adding two numbers should produce a number
+     expectType<number>(1 + 1)
+     expectType<number>(2 + 2)
+
+     // test: A plain object should not have a filter function
+     expectError({}.filter((x: any) => x))
+
+     // test: Partial should make all keys optional
+     expectAssignable<Partial<{a: string; b: string}>>({})
      ```
 
-1. Add a test to your Jest test file
+     > 💡 Pro tip: Even though you can't use the `test()` and `it()` functions in `.test-d.ts` file (that file gets compiled, not actually executed), you can still label your test cases so that any test error messages are easy to read and point you to the right spot.
+     >
+     > Just add a single line comment that begins with `// test:` or `// it:` above one or more test cases and that text will be included with the error message if any of those assertions fail.
+
+1. Call `expectTypeTestsToPassAsync()` in your Jest test file
 
    ```js
    import {expectTypeTestsToPassAsync} from 'jest-tsd'
@@ -35,7 +70,7 @@ yarn add --dev jest-tsd @tsd/typescript
    })
    ```
 
-   > If for some reason your type definition test file is not co-located to your Jest test file, you can pass absolute path(s) to them to `expectTypeTestsToPassAsync()` instead of `__filename`.
+   > If for some reason your `.test-d.ts` type definition test file is not co-located to your Jest test file, you can pass the definition test file's absolute path to `expectTypeTestsToPassAsync()` (instead of `__filename`).
 
 ## Assertions
 
