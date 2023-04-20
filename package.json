@@ -1,10 +1,13 @@
 {
   "name": "jest-tsd",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "The easiest way to test your TS types with Jest",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "author": "Zach Olivare <zach@olivare.net>",
   "license": "MIT",
   "repository": "https://github.com/0livare/jest-tsd",
