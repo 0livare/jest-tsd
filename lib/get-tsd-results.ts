@@ -41,6 +41,6 @@ export async function getTsdResults(pathToTypeDefTest: string) {
 
     tsdResults,
     shortResults,
-    errorCodeFrame: formatTsdResults(tsdResults),
+    formattedMaybeErrorResults: formatTsdResults(tsdResults),
   }
 }
