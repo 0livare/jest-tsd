@@ -10,7 +10,8 @@
   "repository": "https://github.com/0livare/jest-tsd",
   "scripts": {
     "build": "tsup lib/index.ts --format cjs,esm --dts",
-    "test": "jest"
+    "test": "jest",
+    "lint": "tsc"
   },
   "peerDependencies": {
     "@tsd/typescript": "4.x || 5.x"

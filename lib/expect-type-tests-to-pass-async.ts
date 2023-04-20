@@ -27,7 +27,7 @@ export async function expectTypeTestsToPassAsync(pathToTypeDefTest: string) {
   // the jest output unreadable. But the full results are still
   // available via the return value though if the user need them
   // for diagnostic purposes.
-  if (!allTestsPassed) console.error(errorCodeFrame)
+  if (!allTestsPassed) console.info(errorCodeFrame)
   expect(shortResults).toHaveLength(0)
 
   return {

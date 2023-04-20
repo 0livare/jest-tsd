@@ -1,6 +1,3 @@
-// Mostly copied from jest-runner-tsd
-// https://github.com/jest-community/jest-runner-tsd/blob/main/src/formatter.js
-
 import {posix, relative, sep} from 'path'
 import {codeFrameColumns} from '@babel/code-frame'
 import chalk from 'chalk'
@@ -12,6 +9,24 @@ const NOT_EMPTY_LINE_REGEXP = /^(?!$)/gm
 const INDENT = '  '
 const BULLET = '\u25cf '
 
+export function formatTsdResults(tsdResults: TsdResult[]) {
+  const messages = tsdResults.map((result) => {
+    const message = ts.flattenDiagnosticMessageText(result.messageText, '\n')
+
+    if (!result.file || !result.start) return [indentEachLine(message, 2)].join('\n\n')
+
+    const codeFrameAndLocation = getCodeFrameAndLocation(result.file, result.start)
+    const testDescription = getTestDescription(result.file, result.start)
+    const title = testDescription ? chalk.bold.red(makeTitle(testDescription)) : ''
+
+    return [title, indentEachLine(message, 2), indentEachLine(codeFrameAndLocation, 2)]
+      .filter(Boolean)
+      .join('\n\n')
+  })
+
+  return [messages.join('\n\n'), ''].join('\n')
+}
+
 function indentEachLine(lines: string, level: number) {
   return lines.replace(NOT_EMPTY_LINE_REGEXP, INDENT.repeat(level))
 }
@@ -22,9 +37,7 @@ function normalizeSlashes(input: string) {
   return input.split(sep).join(posix.sep)
 }
 
-function getCodeFrameAndLocation(file: SourceFile, start: number | undefined) {
-  if (start === undefined) return
-
+function getCodeFrameAndLocation(file: SourceFile, start: number) {
   const {line, character} = file.getLineAndCharacterOfPosition(start)
 
   const codeFrame = codeFrameColumns(
@@ -41,21 +54,14 @@ function getCodeFrameAndLocation(file: SourceFile, start: number | undefined) {
   return [codeFrame, indentEachLine(location, 1)].join('\n\n')
 }
 
-export function formatTsdResults(tsdResults: TsdResult[]) {
-  // const title = chalk.bold.red(makeTitle('tsd typecheck'))
+function getTestDescription(file: SourceFile, start: number) {
+  // Delete everything after the error
+  let text = file.text.substring(0, start)
+  // Find the last test descriptor remaining in the file
+  let index = Math.max(text.lastIndexOf('it:'), text.lastIndexOf('test:'))
+  // Delete everything before the test descriptor
+  text = text.substring(index)
 
-  const messages = tsdResults.map((result) => {
-    const message = ts.flattenDiagnosticMessageText(result.messageText, '\n')
-
-    const codeFrameAndLocation = result.file
-      ? getCodeFrameAndLocation(result.file, result.start)
-      : undefined
-
-    return codeFrameAndLocation === undefined
-      ? [indentEachLine(message, 2)].join('\n\n')
-      : [indentEachLine(message, 2), indentEachLine(codeFrameAndLocation, 2)].join('\n\n')
-  })
-
-  // return [title, messages.join('\n\n'), ''].join('\n')
-  return [messages.join('\n\n'), ''].join('\n')
+  let testDescription = text.match(/(it|test):\s+(.+)/i)
+  return testDescription ? testDescription[2] : null
 }
