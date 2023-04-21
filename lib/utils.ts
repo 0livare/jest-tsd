@@ -41,7 +41,9 @@ export function parseJsScopeBlocks(str: string) {
   let inString = false
 
   for (let i = 0; i < str.length; i++) {
-    if (str[i] === '"' && !inLineComment && !inBlockComment) {
+    // if (str[i] === ' ') continue
+
+    if ((str[i] === '"' || str[i] === "'") && !inLineComment && !inBlockComment) {
       inString = !inString
     }
 
@@ -72,7 +74,20 @@ export function parseJsScopeBlocks(str: string) {
         currentFunction = ''
       }
     }
+
+    // console.log('"' + str[i]?.replace('\n', '\\n') + '"', {
+    //   openBraces,
+    //   inLineComment,
+    //   inBlockComment,
+    //   inString,
+    // })
   }
 
-  return scopeBlocks
+  const nestedBlocks: string[] = scopeBlocks
+    .map((str) => str.trim().slice(1, -1))
+    .filter((str) => str.includes('{'))
+    .map(parseJsScopeBlocks)
+    .flat(5)
+
+  return [...scopeBlocks, ...nestedBlocks]
 }
