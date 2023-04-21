@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import ts, {type SourceFile} from '@tsd/typescript'
 import {type TsdResult} from 'tsd-lite'
 
-import {regexLastIndexOf} from './utils'
+import {regexLastIndexOf, findClosingBraceIndex} from './utils'
 
 const NOT_EMPTY_LINE_REGEXP = /^(?!$)/gm
 const INDENT = '  '
@@ -17,8 +17,15 @@ export function formatTsdResults(tsdResults: TsdResult[]) {
     if (!result.file || !result.start) return [indentEachLine(message, 2)].join('\n\n')
 
     const codeFrameAndLocation = getCodeFrameAndLocation(result.file, result.start)
-    const testDescription = getTestDescription(result.file, result.start)
-    const title = testDescription ? chalk.bold.red(makeTitle(testDescription)) : ''
+    const testDescribe = getTestDescribe(result.file, result.start)
+    const testName = getTestName(result.file, result.start)
+
+    let title = null
+    if (testDescribe && testName) {
+      title = makeTitle(testDescribe + ' > ' + testName)
+    } else if (testDescribe || testName) {
+      title = makeTitle(testDescribe! ?? testName!)
+    }
 
     return [title, indentEachLine(message, 2), indentEachLine(codeFrameAndLocation, 2)]
       .filter(Boolean)
@@ -32,7 +39,7 @@ function indentEachLine(lines: string, level: number) {
   return lines.replace(NOT_EMPTY_LINE_REGEXP, INDENT.repeat(level))
 }
 function makeTitle(title: string) {
-  return indentEachLine(BULLET + title + '\n', 1)
+  return chalk.bold.red(indentEachLine(BULLET + title + '\n', 1))
 }
 function normalizeSlashes(input: string) {
   return input.split(sep).join(posix.sep)
@@ -57,9 +64,9 @@ function getCodeFrameAndLocation(file: SourceFile, start: number) {
 
 const TEST_DESCRIPTOR_REGEXP = /(it|test)\s*\(\s*['"](.+)['"]/i
 
-function getTestDescription(file: SourceFile, start: number) {
+function getTestName(file: SourceFile, indexOfError: number) {
   // Delete everything after the error
-  let text = file.text.substring(0, start)
+  let text = file.text.substring(0, indexOfError)
   // Find the last test descriptor remaining in the file
   let index = regexLastIndexOf(text, TEST_DESCRIPTOR_REGEXP)
   // Delete everything before the test descriptor
@@ -67,4 +74,26 @@ function getTestDescription(file: SourceFile, start: number) {
 
   let testDescription = text.match(TEST_DESCRIPTOR_REGEXP)
   return testDescription ? testDescription[2] : null
+}
+
+const DESCRIBE_REGEXP = /describe\s*\(\s*['"](.+)['"]/i
+
+function getTestDescribe(file: SourceFile, indexOfError: number) {
+  // Delete everything after the error
+  let text = file.text.substring(0, indexOfError)
+
+  // Find the most recent describe
+  // aka. Find the last describe remaining in the file
+  let indexOfDescribe = regexLastIndexOf(text, DESCRIBE_REGEXP)
+
+  const describeEndIndex = findClosingBraceIndex(file.text, indexOfDescribe)
+  const isErrorWithinDescribe = indexOfError < describeEndIndex
+
+  if (!isErrorWithinDescribe) return null
+
+  // Delete everything before the describe
+  text = text.substring(indexOfDescribe)
+
+  let testDescription = text.match(DESCRIBE_REGEXP)
+  return testDescription ? testDescription[1] : null
 }
