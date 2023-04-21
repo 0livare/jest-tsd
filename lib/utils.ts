@@ -31,3 +31,48 @@ export function regexLastIndexOf(
 
   return lastIndexOf
 }
+
+export function parseJsScopeBlocks(str: string) {
+  const scopeBlocks = []
+  let currentFunction = ''
+  let openBraces = 0
+  let inLineComment = false
+  let inBlockComment = false
+  let inString = false
+
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === '"' && !inLineComment && !inBlockComment) {
+      inString = !inString
+    }
+
+    if (str[i] === '/' && str[i + 1] === '/' && !inString && !inBlockComment) {
+      inLineComment = true
+      i++
+    } else if (str[i] === '\n' && inLineComment) {
+      inLineComment = false
+    } else if (str[i] === '/' && str[i + 1] === '*' && !inString && !inLineComment) {
+      inBlockComment = true
+      i++
+    } else if (str[i] === '*' && str[i + 1] === '/' && inBlockComment) {
+      inBlockComment = false
+      i++
+    } else if (str[i] === '{' && !inLineComment && !inBlockComment && !inString) {
+      openBraces++
+    }
+
+    if (openBraces > 0) {
+      currentFunction += str[i]
+    }
+
+    if (str[i] === '}' && !inLineComment && !inBlockComment && !inString) {
+      openBraces--
+
+      if (openBraces === 0) {
+        scopeBlocks.push(currentFunction)
+        currentFunction = ''
+      }
+    }
+  }
+
+  return scopeBlocks
+}
