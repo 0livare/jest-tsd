@@ -1,12 +1,14 @@
 import {findClosingBraceIndex, commentOutLinesAtBetweenIndices} from './utils'
 
+const SKIP_TEST_REGEX = /(xit|it.skip|xtest|test.skip|xdescribe|describe.skip)\s*\(/
+
 export function commentOutSkippedBlocks(fileText: string) {
   let index = 0
   let itrs = 0
 
   while (index < fileText.length && ++itrs < 20) {
     let sub = fileText.substring(index)
-    let subIndex = sub.search(/(describe|test|it)\.skip/)
+    let subIndex = sub.search(SKIP_TEST_REGEX)
     if (subIndex === -1) break
 
     let startBlockIndex = index + subIndex
