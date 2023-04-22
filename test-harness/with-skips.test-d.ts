@@ -1,5 +1,13 @@
 import {expectError, expectAssignable} from 'tsd-lite'
 
+test.skip('one', () => {
+  makeTypescriptAngry()
+})
+
+it.skip('two', () => {
+  makeTypescriptAngry()
+})
+
 test('Array.from() can be called with a variety of types', () => {
   Array.from('foo')
   Array.from(new Set())
@@ -7,12 +15,28 @@ test('Array.from() can be called with a variety of types', () => {
   Array.from({length: 3}, (_, i) => i)
 })
 
-test.skip('Adding two numbers should produce a number', () => {
+xit('three', () => {
+  makeTypescriptAngry()
+})
+
+xtest('four', () => {
   makeTypescriptAngry()
 })
 
 test('A plain object should not have a filter function', () => {
   expectError({}.filter((x: any) => x))
+})
+
+describe.skip('description', () => {
+  makeTypescriptAngry()
+
+  it('five', () => {
+    makeTypescriptAngry()
+  })
+
+  it('six', () => {
+    makeTypescriptAngry()
+  })
 })
 
 describe('built in types', () => {
@@ -21,14 +45,14 @@ describe('built in types', () => {
   })
 })
 
-describe.skip('Nullable', () => {
+xdescribe('description', () => {
   makeTypescriptAngry()
 
-  it('should allow null, undefined, and the specified type', () => {
+  it('seven', () => {
     makeTypescriptAngry()
   })
 
-  it('should not allow other types', () => {
+  it('eight', () => {
     makeTypescriptAngry()
   })
 })
