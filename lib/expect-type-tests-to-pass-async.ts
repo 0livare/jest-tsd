@@ -9,16 +9,6 @@ expect.extend({
   },
 })
 
-// declare global {
-//   interface JestMatchers<T> {
-//     noTypeErrors(expected: {
-//       assertionsCount: number
-//       formattedMaybeErrorResults: string
-//       shortResults: any
-//     }): any
-//   }
-// }
-
 /**
  * A helper function to assist with running static TS type definition tests
  * that utilize tsd.

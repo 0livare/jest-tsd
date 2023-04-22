@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import pathLib from 'path'
+import path from 'path'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
 import {file} from 'tmp-promise'
@@ -31,10 +31,7 @@ export async function getTsdResults(pathToTypeDefTest: string) {
   if (fileNeedsToBeEdited) {
     fileText = commentOutSkippedBlocks(fileText)
 
-    tmpFilePath = pathLib.join(
-      pathLib.dirname(pathToTypeDefTest),
-      '.tmp-compile-type-def-test.test-d.ts',
-    )
+    tmpFilePath = path.join(path.dirname(pathToTypeDefTest), '.tmp-compile-type-def-test.test-d.ts')
     await fs.writeFile(tmpFilePath, fileText)
     filePathForTsdToCompile = tmpFilePath
   }
