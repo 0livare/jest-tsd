@@ -1,7 +1,7 @@
 import {getTsdResults} from './get-tsd-results'
 
 expect.extend({
-  noTypeErrors(received, {allTestsPassed, formattedMaybeErrorResults, shortResults}) {
+  __noTypeErrors(received, {allTestsPassed, formattedMaybeErrorResults, shortResults}) {
     return {
       message: () => formattedMaybeErrorResults,
       pass: allTestsPassed,
@@ -43,7 +43,7 @@ export async function expectTypeTestsToPassAsync(pathToTypeDefTest: string) {
   } = await getTsdResults(pathToTypeDefTest)
 
   // @ts-ignore
-  expect(shortResults).noTypeErrors({
+  expect(shortResults).__noTypeErrors({
     allTestsPassed,
     formattedMaybeErrorResults,
     shortResults,

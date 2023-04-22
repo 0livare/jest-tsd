@@ -1,5 +1,4 @@
-import {expectType, expectError, expectAssignable, expectNotAssignable} from 'tsd-lite'
-import {Nullable} from './nullable'
+import {expectError, expectAssignable} from 'tsd-lite'
 
 test('Array.from() can be called with a variety of types', () => {
   Array.from('foo')
