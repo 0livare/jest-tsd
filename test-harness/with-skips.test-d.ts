@@ -15,13 +15,13 @@ test('A plain object should not have a filter function', () => {
   expectError({}.filter((x: any) => x))
 })
 
-describe.skip('built in types', () => {
+describe('built in types', () => {
   test('Partial<T> should make all keys optional', () => {
     expectAssignable<Partial<{a: string; b: string}>>({})
   })
 })
 
-describe('Nullable', () => {
+describe.skip('Nullable', () => {
   makeTypescriptAngry()
 
   it('should allow null, undefined, and the specified type', () => {

@@ -21,12 +21,26 @@ export async function getTsdResults(pathToTypeDefTest: string) {
   const testFilePath = convertPathToTypeDefTest(pathToTypeDefTest)
   await ensureTestFileExists({testFilePath, pathToTypeDefTest})
 
-  // const {path} = await file({postfix: '.test-d.ts'})
-  // let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
-  // fileText = commentOutSkippedBlocks(fileText)
-  // await fs.writeFile(path, fileText)
+  let filePathForTsdToCompile = testFilePath
+  let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
 
-  const {assertionsCount, tsdResults} = tsd(testFilePath)
+  const fileNeedsToBeEdited = fileText.match(
+    /(fit|xit|ftest|xtest|test.only|test.skip|it.only|it.skip)\s*\(/,
+  )
+  let tmpFilePath = null
+  if (fileNeedsToBeEdited) {
+    fileText = commentOutSkippedBlocks(fileText)
+
+    tmpFilePath = pathLib.join(
+      pathLib.dirname(pathToTypeDefTest),
+      '.tmp-compile-type-def-test.test-d.ts',
+    )
+    await fs.writeFile(tmpFilePath, fileText)
+    filePathForTsdToCompile = tmpFilePath
+  }
+
+  const {assertionsCount, tsdResults} = tsd(filePathForTsdToCompile)
+  if (tmpFilePath) fs.rm(tmpFilePath)
 
   const shortResults: ShortTsdResult[] = tsdResults.map((r) => ({
     messageText: r.messageText,
