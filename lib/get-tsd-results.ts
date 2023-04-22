@@ -2,7 +2,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
-import {file} from 'tmp-promise'
 
 import {convertPathToTypeDefTest} from './path-massager'
 import {formatTsdResults} from './formatter'

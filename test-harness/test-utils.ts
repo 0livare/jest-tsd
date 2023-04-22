@@ -2,8 +2,7 @@ import path from 'path'
 
 // Note: None of these files actually exist, but the type
 // definition versions of them does.
-const getPathToTestHarness = (name: string) =>
-  path.resolve(__dirname, `../test-harness/${name}.test.js`)
+const getPathToTestHarness = (name: string) => path.resolve(__dirname, `./tests/${name}.test.js`)
 
 export const testHarnessFilePaths = {
   complicated: getPathToTestHarness('complicated'),
