@@ -1,4 +1,5 @@
 import fs from 'fs/promises'
+import pathLib from 'path'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
 import {file} from 'tmp-promise'
@@ -20,10 +21,10 @@ export async function getTsdResults(pathToTypeDefTest: string) {
   const testFilePath = convertPathToTypeDefTest(pathToTypeDefTest)
   await ensureTestFileExists({testFilePath, pathToTypeDefTest})
 
-  const {path} = await file({postfix: '.test-d.ts'})
-  let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
-  fileText = commentOutSkippedBlocks(fileText)
-  await fs.writeFile(path, fileText)
+  // const {path} = await file({postfix: '.test-d.ts'})
+  // let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
+  // fileText = commentOutSkippedBlocks(fileText)
+  // await fs.writeFile(path, fileText)
 
   const {assertionsCount, tsdResults} = tsd(testFilePath)
 
