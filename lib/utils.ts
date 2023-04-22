@@ -72,17 +72,28 @@ export function commentOutLinesAtBetweenIndices(
   start: number,
   end: number = Number.NaN,
 ) {
-  if (Number.isNaN(end)) end = fileText.length
-
-  let text = commentOutLineAtIndex(fileText, start)
-  let newLineIndex = start
-
-  while (newLineIndex < end) {
-    newLineIndex = findNextNewLine(text, {start: newLineIndex + 1})
-    if (newLineIndex === -1) break
-    text = splice(text, newLineIndex + 1, 0, '//')
+  if (Number.isNaN(end)) {
+    end = fileText.length
+  } else {
+    let endOfEndLine = findNextNewLine(fileText, {start: end})
+    if (endOfEndLine < 0) end = fileText.length
+    else end = endOfEndLine - 1
   }
-  return text
+
+  // console.info('to be done: ', {fileText: highlight(fileText, start, end), start, end, originalEnd})
+  while (start <= end) {
+    let prevNewLine = findNextNewLine(fileText, {start: end, dir: 'backward'})
+    // console.info({prevNewLine, fileText: highlight(fileText, prevNewLine + 1), start, end})
+    if (prevNewLine < 0) {
+      if (start === 0) {
+        prevNewLine = -1 // Minus one here because the splice adds 1 to get to 0
+      } else break
+    }
+
+    fileText = splice(fileText, prevNewLine + 1, 0, '//')
+    end = prevNewLine - 1
+  }
+  return fileText
 }
 
 export function findNextNewLine(
@@ -93,17 +104,10 @@ export function findNextNewLine(
   if (fileText[start] === '\n') return start
 
   let index = start
-
-  // console.log('findNextNewLine', {
-  //   fileText: print(fileText),
-  //   start,
-  //   end: fileText.length,
-  //   index,
-  //   dir,
-  // })
+  // console.info('findNextNewLine', {fileText: print(fileText), start, end: fileText.length, index})
 
   while (index >= 0 && index <= fileText.length && fileText[index] !== '\n') {
-    // console.log('inner: ', print(fileText[index]), index)
+    // console.info('inner: ', print(fileText[index]), index)
     const increment = dir === 'forward' ? 1 : -1
     index += increment
   }
@@ -114,15 +118,21 @@ export function findNextNewLine(
   return index
 }
 
-function commentOutLineAtIndex(fileText: string, index: number) {
-  let startOfLineIndex = findNextNewLine(fileText, {start: index, dir: 'backward'})
-  return splice(fileText, startOfLineIndex + 1, 0, '//')
-}
-
 function splice(str: string, start: number, delCount = 0, newSubStr = '') {
   return str.slice(0, start) + newSubStr + str.slice(start + Math.abs(delCount))
 }
 
+// For debugging
+function highlight(str: string, ...indices: number[]) {
+  for (let i = indices.length - 1; i >= 0; i--) {
+    const index = indices[i]!
+    str = splice(str, index + 1, 0, '<<<')
+    str = splice(str, index, 0, '>>>')
+  }
+  return str
+}
+
+// For debugging
 function print(str: string | null | undefined) {
   return `"${String(str).replace(/\n/g, '\\n').replace(/"/g, '\\"')}"`
 }
