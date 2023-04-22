@@ -67,6 +67,14 @@ export function findClosingBraceIndex(str: string, openBraceIndex: number) {
   return -1
 }
 
+/**
+ * Take a string that represents a JavaScript-like file, and prepend `//` to each line
+ * between `start` and `end` (inclusive) indices of the string.
+ *
+ * If `end` is not provided, then comment out all lines from `start` to the end of the file.
+ *
+ * **Note**: `start` and `end` represent string indices, not line numbers.
+ */
 export function commentOutLinesAtBetweenIndices(
   fileText: string,
   start: number,
@@ -96,6 +104,11 @@ export function commentOutLinesAtBetweenIndices(
   return fileText
 }
 
+/**
+ * Starting from `start` string index, and working either forward or backward
+ * (depending on the `dir` argument), return the index of the next newline
+ * character in the string.
+ */
 export function findNextNewLine(
   fileText: string,
   args: {start: number; dir?: 'forward' | 'backward'},
