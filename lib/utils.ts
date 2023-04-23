@@ -154,8 +154,12 @@ export function invertStringIndices(str: string, ranges: Array<readonly [number,
   let invertedRanges: Array<[number, number]> = []
   if (!ranges.length) return invertedRanges
 
-  const beforeFirst = findNextNewLine(str, {start: ranges[0]![0], dir: 'backward'}) - 1
-  invertedRanges.push([0, beforeFirst])
+  const start = ranges[0]![0]
+  const firstNewLine = findNextNewLine(str, {start: 0})
+  if (start > firstNewLine) {
+    const beforeFirst = findNextNewLine(str, {start, dir: 'backward'}) - 1
+    invertedRanges.push([0, beforeFirst])
+  }
 
   for (let i = 0; i < ranges.length; i++) {
     const [start, end] = ranges[i]!
@@ -166,6 +170,10 @@ export function invertStringIndices(str: string, ranges: Array<readonly [number,
       ? findNextNewLine(str, {start: nextStart, dir: 'backward'}) - 1
       : str.length
 
-    invertedRanges.push([afterEnd, beforeNextStart])
+    if (afterEnd !== beforeNextStart) {
+      invertedRanges.push([afterEnd, beforeNextStart])
+    }
   }
+
+  return invertedRanges
 }
