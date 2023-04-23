@@ -136,7 +136,7 @@ function splice(str: string, start: number, delCount = 0, newSubStr = '') {
 }
 
 // For debugging
-function highlight(str: string, ...indices: number[]) {
+export function highlight(str: string, ...indices: number[]) {
   for (let i = indices.length - 1; i >= 0; i--) {
     const index = indices[i]!
     str = splice(str, index + 1, 0, '<<<')
@@ -146,7 +146,7 @@ function highlight(str: string, ...indices: number[]) {
 }
 
 // For debugging
-function print(str: string | null | undefined) {
+export function print(str: string | null | undefined) {
   return `"${String(str).replace(/\n/g, '\\n').replace(/"/g, '\\"')}"`
 }
 
