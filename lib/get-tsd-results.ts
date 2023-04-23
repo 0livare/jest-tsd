@@ -5,7 +5,12 @@ import chalk from 'chalk'
 
 import {convertPathToTypeDefTest} from './path-massager'
 import {formatTsdResults} from './formatter'
-import {commentOutSkippedBlocks} from './test-def-manipulator'
+import {
+  commentOutSkippedBlocks,
+  SKIP_TEST_REGEX,
+  ONLY_TEST_REGEX,
+  commentOutNonOnlyBlocks,
+} from './test-def-manipulator'
 
 type ShortTsdResult = {
   messageText: TsdResult['messageText']
@@ -22,13 +27,18 @@ export async function getTsdResults(pathToTypeDefTest: string) {
 
   let filePathForTsdToCompile = testFilePath
   let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
-
-  const fileNeedsToBeEdited = fileText.match(
-    /(fit|xit|ftest|xtest|test.only|test.skip|it.only|it.skip)\s*\(/,
-  )
   let tmpFilePath = null
+
+  const hasSkips = fileText.match(SKIP_TEST_REGEX)
+  const hasOnlys = fileText.match(ONLY_TEST_REGEX)
+  const fileNeedsToBeEdited = hasSkips || hasOnlys
+
   if (fileNeedsToBeEdited) {
-    fileText = commentOutSkippedBlocks(fileText)
+    if (hasOnlys) {
+      fileText = commentOutNonOnlyBlocks(fileText)
+    } else if (hasSkips) {
+      fileText = commentOutSkippedBlocks(fileText)
+    }
 
     tmpFilePath = path.join(path.dirname(pathToTypeDefTest), '.tmp-compile-type-def-test.test-d.ts')
     await fs.writeFile(tmpFilePath, fileText)

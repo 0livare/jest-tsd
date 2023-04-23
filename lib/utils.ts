@@ -149,3 +149,23 @@ function highlight(str: string, ...indices: number[]) {
 function print(str: string | null | undefined) {
   return `"${String(str).replace(/\n/g, '\\n').replace(/"/g, '\\"')}"`
 }
+
+export function invertStringIndices(str: string, ranges: Array<readonly [number, number]>) {
+  let invertedRanges: Array<[number, number]> = []
+  if (!ranges.length) return invertedRanges
+
+  const beforeFirst = findNextNewLine(str, {start: ranges[0]![0], dir: 'backward'}) - 1
+  invertedRanges.push([0, beforeFirst])
+
+  for (let i = 0; i < ranges.length; i++) {
+    const [start, end] = ranges[i]!
+    const [nextStart, nextEnd] = ranges[i + 1] ?? []
+
+    const afterEnd = findNextNewLine(str, {start: end, dir: 'forward'}) + 1
+    const beforeNextStart = nextStart
+      ? findNextNewLine(str, {start: nextStart, dir: 'backward'}) - 1
+      : str.length
+
+    invertedRanges.push([afterEnd, beforeNextStart])
+  }
+}
