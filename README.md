@@ -8,7 +8,7 @@ The easiest way to test your TypeScript types with Jest.
 - Supports `test()`, `it()`, `describe()`, `.skip`, and `.only` in type tests
 - Write your regular tests in either JavaScript or TypeScript
 
-## Why
+## Why?
 
 Because `jest-tsd` is the easiest to set up, easiest to use, least config option for testing your types with Jest, no matter what your current Jest setup looks like.
 
@@ -16,13 +16,16 @@ Because `jest-tsd` is the easiest to set up, easiest to use, least config option
 | ‎                                                                    | jest-tsd | [jest-runner-tsd][0] | [tsd-lite][1] | [tsd][2] | [DIY][3] |
 | --------------------------------------------------------------------------- | -------- | -------------------- | ------------- | -------- | -------------- |
 | Is integrated with Jest                                                     | **x**    | x                    |               |          |                |
-| Integrates with your existing Jest setup                                    | **x**    |                      |               |          | ?              |
+| Integrates with your existing Jest setup*                                  | **x**    |                      |               |          |                |
 | Only requires a single Jest config                                           | **x**    |                      | n/a           | n/a      | x              |
 | Outputs specific, contextual, helpful errors                                 | **x**    | x                    |               |          |                |
 | Outputs type test errors alongside all other test errors for that module    | **x**    |                      |               |          |                |
 | Comes packaged with type based `expect` functions                           | **x**    | x                    | x             | x        |                |
 | Supports `test()`, `it()`, `describe()`, `.skip`, and `.only` in type tests | **x**    |                      |               |          |                |
-| Allows your non-type tests to be written in JS **or** TS                    | **x**    |                      | x             | x        |                |
+| Allows your non-type tests to be written in JS **or** TS                    | **x**    | x                    | x             | x        |                |
+| Write type tests in the same exact file as regular tests                     |          |                      |               |          | x              |
+
+<sup>\* Running your existing tests also runs your type tests</sup>
 
 [0]: https://github.com/jest-community/jest-runner-tsd
 [1]: https://github.com/mrazauskas/tsd-lite
