@@ -1,12 +1,11 @@
-import {findClosingBraceIndex, commentOutLinesAtBetweenIndices} from './utils'
+import {findClosingBraceIndex, commentOutLinesAtBetweenIndices, invertStringIndices} from './utils'
 
-const SKIP_TEST_REGEX = /(xit|it.skip|xtest|test.skip|xdescribe|describe.skip)\s*\(/
+export const SKIP_TEST_REGEX = /(xit|it.skip|xtest|test.skip|xdescribe|describe.skip)\s*\(/
 
 export function commentOutSkippedBlocks(fileText: string) {
   let index = 0
-  let itrs = 0
 
-  while (index < fileText.length && ++itrs < 20) {
+  while (index < fileText.length) {
     let sub = fileText.substring(index)
     let subIndex = sub.search(SKIP_TEST_REGEX)
     if (subIndex === -1) break
@@ -22,4 +21,35 @@ export function commentOutSkippedBlocks(fileText: string) {
   }
 
   return fileText
+}
+
+export const ONLY_TEST_REGEX = /(fit|it.only|ftest|test.only|fdescribe|describe.only)\s*\(/
+
+export function commentOutNonOnlyBlocks(fileText: string) {
+  const rangesOfOnlys = getIndicesOfAllOnlys(fileText).map(
+    (startIndex) => [startIndex, findClosingBraceIndex(fileText, startIndex)] as const,
+  )
+
+  invertStringIndices(fileText, rangesOfOnlys)?.forEach((range) => {
+    fileText = commentOutLinesAtBetweenIndices(fileText, range[0], range[1])
+  })
+
+  return fileText
+}
+
+function getIndicesOfAllOnlys(fileText: string) {
+  const allOnlyIndices = [] as number[]
+  let sub = fileText
+  let index = 0
+
+  while (index < fileText.length) {
+    sub = sub.substring(index)
+    index = sub.search(ONLY_TEST_REGEX)
+    if (index === -1) break
+
+    allOnlyIndices.push(index)
+    index += 1
+  }
+
+  return allOnlyIndices
 }
