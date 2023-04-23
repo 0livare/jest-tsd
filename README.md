@@ -76,6 +76,8 @@ Type tests are written in a separate `.test-d.ts` file from the rest of your tes
      })
      ```
 
+Keep in mind that your type definition tests aren't run or compiled, they are only statically analyzed by the compiler, and because of that you cannot use any dynamic statements. Meaning, you cannot use dynamic test names, and `test.each`, `test.runIf`, `test.skipIf`, `test.concurrent` APIs. But you can use other familiar APIs, like `test`, `describe`, `.skip` and `.todo`.
+
 ## Assertions
 
 These assertions are re-exported from tsd-lite:
