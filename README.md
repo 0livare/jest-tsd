@@ -13,22 +13,21 @@ The easiest way to test your TypeScript types with Jest.
 Because `jest-tsd` is the easiest to set up, easiest to use, least config option for testing your types with Jest, no matter what your current Jest setup looks like.
 
 <!-- prettier-ignore -->
-| ‎                                                                    | jest-tsd  | [jest-runner-tsd][2] | [tsd-lite][3] | [tsd][4] | [DIY w/tsc][0] | [DIY w/ts-jest][1] |
-| --------------------------------------------------------------------------- | --------  | -------------------- | ------------- | -------- | -------------- | ------------------ |
-| Is integrated with Jest                                                     | **x**     |  x                   |               |          |                | <sub>requires you to be using ts-jest to run all your tests</sub> |
-| Integrates with your existing Jest setup                                    | **x**     |                      |               |          | ?              | ?                   |
-| Only requires a single Jest config                                           | **x**     |                      |      n/a      | n/a      | x              | x                   |
-| Outputs specific, contextual, helpful errors                                 | **x**     |  x                   |               |          |                | x                  |
-| Outputs type test errors alongside all other test errors for that module    | **x**     |                      |               |          |                | x                  |
-| Comes packaged with type based `expect` functions                           | **x**     |  x                   |      x        | x        |                |                    |
-| Supports `test()`, `it()`, `describe()`, `.skip`, and `.only` in type tests | **x**     |                      |               |          |                | x                  |
-| Allows your non-type tests to be written in JS **or** TS                    | **x**     |                      |      x        | x        |                |                    |
+| ‎                                                                    | jest-tsd | [jest-runner-tsd][0] | [tsd-lite][1] | [tsd][2] | [DIY][3] |
+| --------------------------------------------------------------------------- | -------- | -------------------- | ------------- | -------- | -------------- |
+| Is integrated with Jest                                                     | **x**    | x                    |               |          |                |
+| Integrates with your existing Jest setup                                    | **x**    |                      |               |          | ?              |
+| Only requires a single Jest config                                           | **x**    |                      | n/a           | n/a      | x              |
+| Outputs specific, contextual, helpful errors                                 | **x**    | x                    |               |          |                |
+| Outputs type test errors alongside all other test errors for that module    | **x**    |                      |               |          |                |
+| Comes packaged with type based `expect` functions                           | **x**    | x                    | x             | x        |                |
+| Supports `test()`, `it()`, `describe()`, `.skip`, and `.only` in type tests | **x**    |                      |               |          |                |
+| Allows your non-type tests to be written in JS **or** TS                    | **x**    |                      | x             | x        |                |
 
-[0]: https://twitter.com/mattpocockuk/status/1646452575665893377
-[1]: https://github.com/statelyai/xstate/blob/534f31d0f8942574bd460ea22a914c41a8aee6f3/packages/core/test/typegenTypes.test.ts
-[2]: https://github.com/jest-community/jest-runner-tsd
-[3]: https://github.com/mrazauskas/tsd-lite
-[4]: https://github.com/SamVerschueren/tsd
+[0]: https://github.com/jest-community/jest-runner-tsd
+[1]: https://github.com/mrazauskas/tsd-lite
+[2]: https://github.com/SamVerschueren/tsd
+[3]: https://twitter.com/mattpocockuk/status/1646452575665893377
 
 ## Install
 
