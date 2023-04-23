@@ -1,9 +1,11 @@
 import fs from 'fs/promises'
+import path from 'path'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
 
 import {convertPathToTypeDefTest} from './path-massager'
 import {formatTsdResults} from './formatter'
+import {commentOutSkippedBlocks} from './test-def-manipulator'
 
 type ShortTsdResult = {
   messageText: TsdResult['messageText']
@@ -16,24 +18,25 @@ type ShortTsdResult = {
 
 export async function getTsdResults(pathToTypeDefTest: string) {
   const testFilePath = convertPathToTypeDefTest(pathToTypeDefTest)
+  await ensureTestFileExists({testFilePath, pathToTypeDefTest})
 
-  try {
-    await fs.access(testFilePath, fs.constants.F_OK)
-  } catch (e: unknown) {
-    const err = e as NodeJS.ErrnoException
-    const jestTestFileName = pathToTypeDefTest.split('/').pop()
-    throw new Error(
-      [
-        `No type definition test file found.`,
-        `File does not exist: ${err.path}`,
-        chalk.bold.yellow(
-          `Did you forget to create your \`.test-d.ts\` file for ${jestTestFileName}?`,
-        ),
-      ].join('\n'),
-    )
+  let filePathForTsdToCompile = testFilePath
+  let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
+
+  const fileNeedsToBeEdited = fileText.match(
+    /(fit|xit|ftest|xtest|test.only|test.skip|it.only|it.skip)\s*\(/,
+  )
+  let tmpFilePath = null
+  if (fileNeedsToBeEdited) {
+    fileText = commentOutSkippedBlocks(fileText)
+
+    tmpFilePath = path.join(path.dirname(pathToTypeDefTest), '.tmp-compile-type-def-test.test-d.ts')
+    await fs.writeFile(tmpFilePath, fileText)
+    filePathForTsdToCompile = tmpFilePath
   }
 
-  const {assertionsCount, tsdResults} = tsd(testFilePath)
+  const {assertionsCount, tsdResults} = tsd(filePathForTsdToCompile)
+  if (tmpFilePath) fs.rm(tmpFilePath)
 
   const shortResults: ShortTsdResult[] = tsdResults.map((r) => ({
     messageText: r.messageText,
@@ -52,5 +55,25 @@ export async function getTsdResults(pathToTypeDefTest: string) {
     tsdResults,
     shortResults,
     formattedMaybeErrorResults: formatTsdResults(tsdResults),
+  }
+}
+
+async function ensureTestFileExists(args: {testFilePath: string; pathToTypeDefTest: string}) {
+  const {testFilePath, pathToTypeDefTest} = args
+
+  try {
+    await fs.access(testFilePath, fs.constants.F_OK)
+  } catch (e: unknown) {
+    const err = e as NodeJS.ErrnoException
+    const jestTestFileName = pathToTypeDefTest.split('/').pop()
+    throw new Error(
+      [
+        `No type definition test file found.`,
+        `File does not exist: ${err.path}`,
+        chalk.bold.yellow(
+          `Did you forget to create your \`.test-d.ts\` file for ${jestTestFileName}?`,
+        ),
+      ].join('\n'),
+    )
   }
 }
