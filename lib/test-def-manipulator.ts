@@ -26,13 +26,14 @@ export function commentOutSkippedBlocks(fileText: string) {
 export const ONLY_TEST_REGEX = /(fit|it.only|ftest|test.only|fdescribe|describe.only)\s*\(/
 
 export function commentOutNonOnlyBlocks(fileText: string) {
-  const rangesOfOnlys = getIndicesOfAllOnlys(fileText).map(
+  const startOfOnlys = getIndicesOfAllOnlys(fileText)
+  const rangesOfOnlys = startOfOnlys.map(
     (startIndex) => [startIndex, findClosingBraceIndex(fileText, startIndex)] as const,
   )
 
   const invertedRanges = invertStringIndices(fileText, rangesOfOnlys).reverse()
-  // console.info({rangesOfOnlys, invertedRanges})
-  // console.info(highlight(fileText, ...invertedRanges.flat()))
+  // console.info({startOfOnlys, rangesOfOnlys, invertedRanges})
+  // console.info(highlight(fileText, ...startOfOnlys.flat()))
 
   invertedRanges.forEach((range) => {
     fileText = commentOutLinesAtBetweenIndices(fileText, range[0], range[1])
@@ -48,11 +49,15 @@ function getIndicesOfAllOnlys(fileText: string) {
 
   while (index < fileText.length) {
     sub = sub.substring(index)
-    index = sub.search(ONLY_TEST_REGEX)
-    if (index === -1) break
+    const subIndex = sub.search(ONLY_TEST_REGEX)
+    if (subIndex === -1) break
 
-    allOnlyIndices.push(index)
-    index += 1
+    const onlyIndex = index + subIndex
+    // console.info({index, subIndex, sub})
+    // console.info('found only at', highlight(fileText, onlyIndex))
+
+    allOnlyIndices.push(onlyIndex)
+    index = onlyIndex + 1
   }
 
   return allOnlyIndices
