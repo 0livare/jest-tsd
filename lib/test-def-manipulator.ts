@@ -30,7 +30,11 @@ export function commentOutNonOnlyBlocks(fileText: string) {
     (startIndex) => [startIndex, findClosingBraceIndex(fileText, startIndex)] as const,
   )
 
-  invertStringIndices(fileText, rangesOfOnlys)?.forEach((range) => {
+  const invertedRanges = invertStringIndices(fileText, rangesOfOnlys).reverse()
+  // console.info({rangesOfOnlys, invertedRanges})
+  // console.info(highlight(fileText, ...invertedRanges.flat()))
+
+  invertedRanges.forEach((range) => {
     fileText = commentOutLinesAtBetweenIndices(fileText, range[0], range[1])
   })
 

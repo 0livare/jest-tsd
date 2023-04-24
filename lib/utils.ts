@@ -80,6 +80,7 @@ export function commentOutLinesAtBetweenIndices(
   start: number,
   end: number = Number.NaN,
 ) {
+  // const originalEnd = end
   if (Number.isNaN(end)) {
     end = fileText.length
   } else {
@@ -91,7 +92,7 @@ export function commentOutLinesAtBetweenIndices(
   // console.info('to be done: ', {fileText: highlight(fileText, start, end), start, end, originalEnd})
   while (start <= end) {
     let prevNewLine = findNextNewLine(fileText, {start: end, dir: 'backward'})
-    // console.info({prevNewLine, fileText: highlight(fileText, prevNewLine + 1), start, end})
+    // console.info('about to comment out', {prevNewLine,fileText: highlight(fileText, prevNewLine + 1),start,end})
     if (prevNewLine < 0) {
       if (start === 0) {
         prevNewLine = -1 // Minus one here because the splice adds 1 to get to 0
@@ -101,6 +102,7 @@ export function commentOutLinesAtBetweenIndices(
     fileText = splice(fileText, prevNewLine + 1, 0, '//')
     end = prevNewLine - 1
   }
+  // console.info('LOOP DONE', fileText)
   return fileText
 }
 
@@ -150,25 +152,37 @@ export function print(str: string | null | undefined) {
   return `"${String(str).replace(/\n/g, '\\n').replace(/"/g, '\\"')}"`
 }
 
+/**
+ * Given a set of ranges in a string, return an inverse set of ranges
+ * that encompass the lines of the string that are not included in the
+ * original ranges.
+ */
 export function invertStringIndices(str: string, ranges: Array<readonly [number, number]>) {
   let invertedRanges: Array<[number, number]> = []
   if (!ranges.length) return invertedRanges
 
   const start = ranges[0]![0]
   const firstNewLine = findNextNewLine(str, {start: 0})
+
   if (start > firstNewLine) {
-    const beforeFirst = findNextNewLine(str, {start, dir: 'backward'}) - 1
-    invertedRanges.push([0, beforeFirst])
+    const closestNewLineBeforeStart = findNextNewLine(str, {start, dir: 'backward'})
+    if (closestNewLineBeforeStart > 0) {
+      invertedRanges.push([0, closestNewLineBeforeStart - 1])
+    }
   }
 
   for (let i = 0; i < ranges.length; i++) {
     const [start, end] = ranges[i]!
     const [nextStart, nextEnd] = ranges[i + 1] ?? []
 
-    const afterEnd = findNextNewLine(str, {start: end, dir: 'forward'}) + 1
+    const nextNewLine = findNextNewLine(str, {start: end, dir: 'forward'})
+    if (nextNewLine < 0) break
+
+    const afterEnd = nextNewLine + 1
     const beforeNextStart = nextStart
       ? findNextNewLine(str, {start: nextStart, dir: 'backward'}) - 1
       : str.length
+    // console.info('itr: ', i, {end, nextStart, afterEnd, beforeNextStart})
 
     if (afterEnd !== beforeNextStart) {
       invertedRanges.push([afterEnd, beforeNextStart])
