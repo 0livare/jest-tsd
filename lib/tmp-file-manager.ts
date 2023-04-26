@@ -1,5 +1,4 @@
 import path from 'path'
-import fs from 'fs/promises'
 import {packageDirectory} from 'pkg-dir'
 
 export async function createTmpFile(args: {
@@ -8,7 +7,7 @@ export async function createTmpFile(args: {
   /** Contents of`.test-d.ts` file */
   fileText: string
 }) {
-  const {filePath, fileText} = args
+  let {filePath, fileText} = args
 
   const pkgDir = await packageDirectory({
     cwd: path.dirname(filePath),
@@ -21,19 +20,32 @@ export async function createTmpFile(args: {
     'jest-tsd',
     '.tmp-compile-type-def-test.test-d.ts',
   )
+
+  fileText = adjustRelativeImportPaths({
+    fileText,
+    filePath,
+    newCwd: pkgDir,
+  })
 }
 
-function adjustRelativeImportPaths(args: {fileText: string; filePath: string}) {
-  let {fileText, filePath} = args
+const JS_IMPORT_REGEX = /from\s+['"](\..*)['"]/
 
-  const relativeImportPaths = fileText.match(/from\s+['"](\..*)['"]/g)
-  if (!relativeImportPaths) return fileText
+export function adjustRelativeImportPaths(args: {
+  fileText: string
+  filePath: string
+  newCwd: string
+}) {
+  let {fileText, filePath, newCwd} = args
 
-  relativeImportPaths.forEach((originalRelativePath) => {
+  const jsRelativeImports = fileText.match(new RegExp(JS_IMPORT_REGEX.source, 'g'))
+  if (!jsRelativeImports) return fileText
+
+  jsRelativeImports.forEach((jsRelativeImport) => {
+    const originalRelativePath = jsRelativeImport.match(JS_IMPORT_REGEX)?.[1]!
     const newRelativePath = changeRelativePathBase({
       originalRelativePath,
-      originalCwdOrFile: filePath,
-      newCwd: path.dirname(filePath),
+      originalCwd: filePath,
+      newCwd,
     })
 
     fileText = fileText.replace(originalRelativePath, newRelativePath)
@@ -42,14 +54,14 @@ function adjustRelativeImportPaths(args: {fileText: string; filePath: string}) {
   return fileText
 }
 
-function changeRelativePathBase(args: {
+export function changeRelativePathBase(args: {
   originalRelativePath: string
-  originalCwdOrFile: string
+  originalCwd: string
   newCwd: string
 }) {
-  const {originalRelativePath, originalCwdOrFile, newCwd} = args
+  const {originalRelativePath, originalCwd, newCwd} = args
 
-  const originalResolvedPath = path.resolve(path.dirname(originalCwdOrFile), originalRelativePath)
+  const originalResolvedPath = path.resolve(path.dirname(originalCwd), originalRelativePath)
   const newRelativePath = path.relative(newCwd, originalResolvedPath)
 
   return newRelativePath
