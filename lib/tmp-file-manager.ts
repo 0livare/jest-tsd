@@ -44,7 +44,7 @@ export function adjustRelativeImportPaths(args: {
     const originalRelativePath = jsRelativeImport.match(JS_IMPORT_REGEX)?.[1]!
     const newRelativePath = changeRelativePathBase({
       originalRelativePath,
-      originalCwd: filePath,
+      originalCwd: path.dirname(filePath),
       newCwd,
     })
 
@@ -61,8 +61,9 @@ export function changeRelativePathBase(args: {
 }) {
   const {originalRelativePath, originalCwd, newCwd} = args
 
-  const originalResolvedPath = path.resolve(path.dirname(originalCwd), originalRelativePath)
-  const newRelativePath = path.relative(newCwd, originalResolvedPath)
+  const originalResolvedPath = path.resolve(originalCwd, originalRelativePath)
+  let newRelativePath = path.relative(newCwd, originalResolvedPath)
+  if (!newRelativePath.startsWith('.')) newRelativePath = `./${newRelativePath}`
 
   return newRelativePath
 }
