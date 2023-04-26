@@ -1,4 +1,5 @@
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import {packageDirectory} from 'pkg-dir'
 
 export async function createTmpFile(args: {
@@ -24,8 +25,12 @@ export async function createTmpFile(args: {
   fileText = adjustRelativeImportPaths({
     fileText,
     filePath,
-    newCwd: pkgDir,
+    newCwd: path.dirname(tmpFilePath),
   })
+
+  await fs.mkdir(path.dirname(tmpFilePath), {recursive: true})
+  await fs.writeFile(tmpFilePath, fileText)
+  return tmpFilePath
 }
 
 const JS_IMPORT_REGEX = /from\s+['"](\..*)['"]/

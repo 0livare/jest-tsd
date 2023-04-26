@@ -1,5 +1,4 @@
-import fs from 'fs/promises'
-import path from 'path'
+import fs from 'node:fs/promises'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
 
@@ -11,6 +10,7 @@ import {
   ONLY_TEST_REGEX,
   commentOutNonOnlyBlocks,
 } from './test-def-manipulator'
+import {createTmpFile} from './tmp-file-manager'
 
 type ShortTsdResult = {
   messageText: TsdResult['messageText']
@@ -31,7 +31,7 @@ export async function getTsdResults(pathToTypeDefTest: string) {
 
   const hasSkips = fileText.match(SKIP_TEST_REGEX)
   const hasOnlys = fileText.match(ONLY_TEST_REGEX)
-  const fileNeedsToBeEdited = hasSkips || hasOnlys
+  const fileNeedsToBeEdited = !!(hasSkips || hasOnlys)
 
   if (fileNeedsToBeEdited) {
     if (hasOnlys) {
@@ -40,8 +40,7 @@ export async function getTsdResults(pathToTypeDefTest: string) {
       fileText = commentOutSkippedBlocks(fileText)
     }
 
-    tmpFilePath = path.join(path.dirname(pathToTypeDefTest), '.tmp-compile-type-def-test.test-d.ts')
-    await fs.writeFile(tmpFilePath, fileText)
+    tmpFilePath = await createTmpFile({filePath: testFilePath, fileText})
     filePathForTsdToCompile = tmpFilePath
   }
 
