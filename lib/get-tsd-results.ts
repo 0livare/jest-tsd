@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import tsd, {type TsdResult} from 'tsd-lite'
 import chalk from 'chalk'
 
-import {convertPathToTypeDefTest} from './path-massager'
+import {convertPathToTypeDefTest} from './massage-test-path'
 import {formatTsdResults} from './formatter'
 import {
   commentOutSkippedBlocks,
