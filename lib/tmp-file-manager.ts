@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+// @ts-ignore
 import {packageDirectory} from 'pkg-dir'
 
 export async function createTmpFile(args: {

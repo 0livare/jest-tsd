@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 
 // Note: None of these files actually exist, but the type
 // definition versions of them does.
