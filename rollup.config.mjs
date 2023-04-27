@@ -9,5 +9,5 @@ export default {
     sourcemap: true,
   },
   plugins: [typescript(), nodeResolve()],
-  external: ['@babel/code-frame', 'chalk', 'tsd-lite', '@tsd/typescript'],
+  external: ['@babel/code-frame', 'chalk', 'tsd-lite', '@tsd/typescript', 'tmp-promise'],
 }

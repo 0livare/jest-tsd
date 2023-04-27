@@ -45,7 +45,6 @@ export async function getTsdResults(pathToTypeDefTest: string) {
   }
 
   const {assertionsCount, tsdResults} = tsd(filePathForTsdToCompile)
-  // if (tmpFilePath) fs.rm(tmpFilePath)
 
   const shortResults: ShortTsdResult[] = tsdResults.map((r) => ({
     messageText: r.messageText,

@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 // @ts-ignore
 import {packageDirectory} from 'pkg-dir'
+import {file} from 'tmp-promise'
 
 export async function createTmpFile(args: {
   /** Path to `.test-d.ts` file */
@@ -16,12 +17,7 @@ export async function createTmpFile(args: {
   })
   if (!pkgDir) throw new Error(`jest-tsd: Could not find package directory for ${filePath}`)
 
-  const tmpFilePath = path.join(
-    pkgDir,
-    'node_modules',
-    'jest-tsd',
-    '.tmp-compile-type-def-test.test-d.ts',
-  )
+  const {path: tmpFilePath} = await file({postfix: '.test-d.ts'})
 
   fileText = await adjustImportPaths({
     fileText,
