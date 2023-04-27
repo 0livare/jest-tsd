@@ -14,7 +14,7 @@ export async function createTmpFile(args: {
   const pkgDir = await packageDirectory({
     cwd: path.dirname(filePath),
   })
-  if (!pkgDir) throw new Error(`Could not find package directory for ${filePath}`)
+  if (!pkgDir) throw new Error(`jest-tsd: Could not find package directory for ${filePath}`)
 
   const tmpFilePath = path.join(
     pkgDir,
@@ -23,10 +23,11 @@ export async function createTmpFile(args: {
     '.tmp-compile-type-def-test.test-d.ts',
   )
 
-  fileText = adjustRelativeImportPaths({
+  fileText = await adjustImportPaths({
     fileText,
     filePath,
     newCwd: path.dirname(tmpFilePath),
+    pkgDir,
   })
 
   await fs.mkdir(path.dirname(tmpFilePath), {recursive: true})
@@ -34,28 +35,47 @@ export async function createTmpFile(args: {
   return tmpFilePath
 }
 
-const JS_IMPORT_REGEX = /from\s+['"](\..*)['"]/
+const JS_IMPORT_REGEX = /import .+ from\s+['"](.+)['"]/
 
-export function adjustRelativeImportPaths(args: {
+/**
+ * Change all import paths (both relative and node_module) to be
+ * relative to the tmp file's location.
+ */
+export async function adjustImportPaths(args: {
   fileText: string
   filePath: string
   newCwd: string
+  pkgDir: string
 }) {
-  let {fileText, filePath, newCwd} = args
+  let {fileText, filePath, newCwd, pkgDir} = args
 
   const jsRelativeImports = fileText.match(new RegExp(JS_IMPORT_REGEX.source, 'g'))
   if (!jsRelativeImports) return fileText
 
-  jsRelativeImports.forEach((jsRelativeImport) => {
-    const originalRelativePath = jsRelativeImport.match(JS_IMPORT_REGEX)?.[1]!
-    const newRelativePath = changeRelativePathBase({
-      originalRelativePath,
+  for (const jsRelativeImport of jsRelativeImports) {
+    let originalImportPath = jsRelativeImport.match(JS_IMPORT_REGEX)?.[1]!
+    let newRelativePath = originalImportPath
+    const isNodeModule = !originalImportPath.startsWith('.')
+
+    if (isNodeModule) {
+      if (!pkgDir) throwError(filePath)
+      const pathToNodeModule = path.join(pkgDir, 'node_modules', originalImportPath)
+      const pkg = await fs.readFile(path.join(pathToNodeModule, 'package.json'), 'utf8')
+
+      if (!pkg) throwError(filePath)
+
+      let pkgMain = JSON.parse(pkg).main
+      newRelativePath = path.join(pathToNodeModule, pkgMain)
+    }
+
+    newRelativePath = changeRelativePathBase({
+      originalRelativePath: newRelativePath,
       originalCwd: path.dirname(filePath),
       newCwd,
     })
 
-    fileText = fileText.replace(originalRelativePath, newRelativePath)
-  })
+    fileText = fileText.replace(originalImportPath, newRelativePath)
+  }
 
   return fileText
 }
@@ -72,4 +92,8 @@ export function changeRelativePathBase(args: {
   if (!newRelativePath.startsWith('.')) newRelativePath = `./${newRelativePath}`
 
   return newRelativePath
+}
+
+function throwError(filePath: string) {
+  throw new Error(`jest-tsd: Failed to statically analyze type definition test at ${filePath}`)
 }

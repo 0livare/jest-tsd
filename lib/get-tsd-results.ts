@@ -27,7 +27,7 @@ export async function getTsdResults(pathToTypeDefTest: string) {
 
   let filePathForTsdToCompile = testFilePath
   let fileText = await fs.readFile(testFilePath, {encoding: 'utf8'})
-  let tmpFilePath = null
+  let tmpFilePath: string | null = null
 
   const hasSkips = fileText.match(SKIP_TEST_REGEX)
   const hasOnlys = fileText.match(ONLY_TEST_REGEX)
@@ -45,7 +45,7 @@ export async function getTsdResults(pathToTypeDefTest: string) {
   }
 
   const {assertionsCount, tsdResults} = tsd(filePathForTsdToCompile)
-  if (tmpFilePath) fs.rm(tmpFilePath)
+  // if (tmpFilePath) fs.rm(tmpFilePath)
 
   const shortResults: ShortTsdResult[] = tsdResults.map((r) => ({
     messageText: r.messageText,
