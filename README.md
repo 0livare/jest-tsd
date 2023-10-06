@@ -76,6 +76,20 @@ Type tests are written in a separate `.test-d.ts` file from the rest of your tes
      })
      ```
 
+### JSX
+
+Your type definition tests can also use JSX! 
+
+The only requirement is that both your Jest test file and your type definition test file end with `x`.
+
+For example:
+
+```bash
+src/dir/foo.test.jsx
+src/dir/foo.test-d.tsx
+```
+
+
 ## Assertions
 
 These assertions are re-exported from tsd-lite:
